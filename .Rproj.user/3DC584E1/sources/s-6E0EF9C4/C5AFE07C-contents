@@ -3,6 +3,17 @@ library(lubridate)
 library(dplyr)
 library(ggplot2)
 library(writexl)
+# install.packages("officer") # Install
+# install.packages("Rtools")
+library(officer) # Load
+# install.packages("flextable")
+library(flextable)
+# install.packages("magrittr")
+library(magrittr)
+# install.packages("devtools")
+# library(devtools)
+# find.package("devtools")
+# find_rtools()
 
 datapaul21<-read_xlsx("C:\\Users\\LBarrios\\OneDrive - Laboratorios Lansier\\Laptop_antigua\\escritorio\\historico_venta_lansier\\Ventas Lansier 2021 DataPaul.xlsx",
           sheet="datapaul")
@@ -82,6 +93,14 @@ institucionmes<-institucionmes %>% mutate(crecimientoytdinteranual=sprintf("%.2f
 totalmes<-totalmes %>% mutate(crecimientoytdinteranual=sprintf("%.2f",(ytd21/ytd20*100)-100))
 totalmes[1,5]<-datapaul21nocovid %>% summarise(ytdcumplimiento=sprintf("%.2f",sum(subtotal)/sum(ppsol)*100))
 
+privadomes<-privadomes %>% mutate(ytd21=ytdprivado21)
+privadomes<-privadomes %>% mutate(crecimientoytdinteranual=sprintf("%.2f",((ytdprivado21/ytdprivado20*100)-100)))
+
+essaludmes<-essaludmes %>% mutate(ytd21=ytdessalud21)
+essaludmes<-essaludmes %>% mutate(crecimientoytdinteranual=sprintf("%.2f",((ytdessalud21/ytdessalud20*100)-100)))
+
+institucionmes<-institucionmes %>% mutate(ytd21=ytdinstitu21)
+institucionmes<-institucionmes %>% mutate(crecimientoytdinteranual=sprintf("%.2f",((ytdinstitu21/ytdinstitu20*100)-100)))
 
 
 
@@ -112,9 +131,25 @@ ggsave("cumplimientobycanal.jpg", dpi = 300)
 dataagrupada20<-datapaul20nocovid  %>% group_by( periodo,tipocl) %>%
   summarise(soles=sum(subtotal/1000000),cumplimiento=as.numeric( sprintf("%.2f",sum(subtotal)/sum(ppsol)*100)))
 
-dataagrupada20  %>%
-  ggplot(mapping=aes(x=periodo,y=cumplimiento,color=tipocl))+
-  geom_line(size=1.3)+
-  geom_point(color="black",size=2)+theme_light()+labs(y="% de cumplimiento")+facet_grid(cols=vars(tipocl))+
-  theme(legend.position="none")+geom_hline(yintercept = 100,color="red",linetype="dashed")
+# estos graficos no estan mal solo que no son los slides en si
+# dataagrupada20  %>%
+#   ggplot(mapping=aes(x=periodo,y=cumplimiento,color=tipocl))+
+#   geom_line(size=1.3)+
+#   geom_point(color="black",size=2)+theme_light()+labs(y="% de cumplimiento")+facet_grid(cols=vars(tipocl))+
+#   theme(legend.position="none")+geom_hline(yintercept = 100,color="red",linetype="dashed")
+# 
+# dataagrupada20  %>%
+#   ggplot(mapping=aes(x=periodo,y=cumplimiento,color=tipocl))+
+#   geom_line(size=1.3)+geom_line(data=dataagrupada,mapping = aes(x=dataagrupada20$periodo,y=cumplimiento))+
+#   geom_point(color="black",size=2)+theme_light()+labs(y="% de cumplimiento")+facet_grid(cols=vars(tipocl))+
+#   theme(legend.position="none")+geom_hline(yintercept = 100,color="red",linetype="dashed")
 
+#---------------------------------- tercer slide ----------------------------------#
+# cumplimiento por producto acumulado a diciembre
+
+pres_2 <- read_pptx() %>%
+  add_slide() %>% 
+  ph_with(value = "Hello world", location = ph_location_type(type = "title")) %>% 
+  ph_with(value = head(iris), location = ph_location_type(type = "body")) 
+
+print(pres_2, target = "pptx_example_2.pptx")
